@@ -81,7 +81,7 @@ class ComplexSR(nn.Module):
 
 
 class AmplitudeSR(nn.Module):
-    """Ultra-lightweight amplitude-only super-resolution (ESPCN-style)"""
+    """Ultra-lightweight amplitude-only super-resolution with pixel shuffle"""
     def __init__(self, scale_factor=2, channels=24):
         super().__init__()
         self.scale_factor = scale_factor
@@ -171,7 +171,7 @@ class PhaseEstimator(nn.Module):
 
 
 class LiftHolo(nn.Module):
-    """Simplified: ESPCN amplitude + phase from LR (no complex SR branch)"""
+    """LiftHolo: amplitude super-resolution guided holographic phase generation"""
     def __init__(self, scale_factor=2, amp_channels=24, name='liftholo'):
         super().__init__()
         self.name = name
