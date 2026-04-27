@@ -1,0 +1,17 @@
+# LiftHolo Configuration
+# Parameters match the paper: "LiftHolo: Lifted Amplitude-Guided Deep Learning 
+# for Accelerated High-Quality Computer-Generated Holography"
+
+model:
+  name: "liftholo"
+  scale_factor: 2          # Upsampling factor (2 or 4)
+  amp_channels: 32         # Amplitude SR branch channels
+
+optical:
+  wavelength: 532e-9       # 532 nm (green laser)
+  pitch: 3.6e-6            # 3.6 um (SLM pixel pitch)
+  z: 0.15                  # 15 cm propagation distance
+
+inference:
+  device: "cuda"
+  output_dir: "./results"
