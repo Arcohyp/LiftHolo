@@ -118,10 +118,10 @@ The default configuration uses the same optical parameters as the paper:
 If you use LiftHolo in your research, please cite this repository directly until the associated paper is officially published:
 
 ```bibtex
-@software{liftholo2025,
+@software{liftholo2026,
   title={LiftHolo: Lifted Amplitude-Guided Deep Learning for Accelerated High-Quality Computer-Generated Holography},
   author={Cheng, Xirun and Liu, Yong and Wang, Quan and Liu, Xiang and Zhang, Chaofan and Gao, Zhenyu},
-  year={2025},
+  year={2026},
   url={https://github.com/Arcohyp/LiftHolo}
 }
 ```
