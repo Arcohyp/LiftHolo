@@ -82,16 +82,24 @@ class ComplexSR(nn.Module):
 
 class AmplitudeSR(nn.Module):
     """Ultra-lightweight amplitude-only super-resolution with pixel shuffle"""
-    def __init__(self, scale_factor=2, channels=24):
+    def __init__(self, scale_factor=2, channels=24, single_pixelshuffle=False):
         super().__init__()
         self.scale_factor = scale_factor
+        self.single_pixelshuffle = single_pixelshuffle and scale_factor == 2
 
         self.conv1 = nn.Conv2d(1, channels, 5, padding=2)
-        self.conv2 = nn.Conv2d(channels, channels * 4, 3, padding=1)
 
-        self.pixel_shuffle1 = nn.PixelShuffle(2)
-        self.conv3 = nn.Conv2d(channels, channels * 4, 3, padding=1)
-        self.pixel_shuffle2 = nn.PixelShuffle(2)
+        if self.single_pixelshuffle:
+            # Corrected variant: one PixelShuffle for x2, halving parameters.
+            self.conv2 = nn.Conv2d(channels, channels * scale_factor * scale_factor, 3, padding=1)
+            self.pixel_shuffle1 = nn.PixelShuffle(scale_factor)
+            self.conv3 = None
+            self.pixel_shuffle2 = None
+        else:
+            self.conv2 = nn.Conv2d(channels, channels * 4, 3, padding=1)
+            self.pixel_shuffle1 = nn.PixelShuffle(2)
+            self.conv3 = nn.Conv2d(channels, channels * 4, 3, padding=1)
+            self.pixel_shuffle2 = nn.PixelShuffle(2)
 
         self.conv_out = nn.Conv2d(channels, 1, 3, padding=1)
 
@@ -102,9 +110,10 @@ class AmplitudeSR(nn.Module):
         x = self.lrelu(self.conv2(x))
 
         x = self.pixel_shuffle1(x)
-        x = self.lrelu(self.conv3(x))
+        if self.conv3 is not None:
+            x = self.lrelu(self.conv3(x))
+            x = self.pixel_shuffle2(x)
 
-        x = self.pixel_shuffle2(x)
         x = self.conv_out(x)
 
         return torch.sigmoid(x)
@@ -172,12 +181,12 @@ class PhaseEstimator(nn.Module):
 
 class LiftHolo(nn.Module):
     """LiftHolo: amplitude super-resolution guided holographic phase generation"""
-    def __init__(self, scale_factor=2, amp_channels=24, name='liftholo'):
+    def __init__(self, scale_factor=2, amp_channels=24, single_pixelshuffle=False, name='liftholo'):
         super().__init__()
         self.name = name
         self.scale_factor = scale_factor
 
-        self.amp_sr = AmplitudeSR(scale_factor, amp_channels)
+        self.amp_sr = AmplitudeSR(scale_factor, amp_channels, single_pixelshuffle)
         self.ccnn1_phase = PhaseEstimator(scale_factor)
         self.ccnn2 = PhaseRefiner(scale_factor)
 

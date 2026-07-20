@@ -4,11 +4,11 @@
 
 LiftHolo is a deep learning framework for holographic image super-resolution and phase-only hologram generation. It combines an efficient amplitude super-resolution branch with complex-valued convolutional networks for phase estimation and refinement, enabling high-quality hologram reconstruction with minimal parameters.
 
-> **Note**: This repository contains the reference implementation accompanying a manuscript currently under peer review. The associated paper has not yet been accepted. Code is provided for reproducibility and community feedback; please cite the preprint or repository if you use this code prior to official publication.
+> **Note**: This repository contains the reference implementation accompanying a manuscript currently under **major revision** at *Optics Letters*. Code is provided for reproducibility and community feedback; please cite the preprint or repository if you use this code prior to official publication.
 
 ## Features
 
-- **Ultra-lightweight**: ~44K parameters, suitable for real-time applications
+- **Ultra-lightweight**: ~44K parameters by default, with an optional ~23K corrected single-PixelShuffle variant
 - **Hybrid architecture**: Amplitude SR + complex-valued phase estimation + phase refinement
 - **End-to-end hologram generation**: From low-resolution amplitude to high-resolution phase-only hologram
 - **Angular Spectrum Method (ASM)**: Built-in wave propagation simulation
@@ -69,8 +69,8 @@ python scripts/inference.py \
 import torch
 from liftHolo import LiftHolo
 
-# Initialize model
-model = LiftHolo(scale_factor=2, amp_channels=32)
+# Initialize model (default ~44K param variant; use single_pixelshuffle=True for ~23K)
+model = LiftHolo(scale_factor=2, amp_channels=24)
 model.eval()
 
 # Load input
@@ -112,6 +112,16 @@ The default configuration uses the same optical parameters as the paper:
 - Propagation distance: **150 mm**
 - Target resolution: **3840 × 2160** (4K UHD)
 - Input resolution: **1920 × 1080** (for x2 super-resolution)
+
+### Model variants
+
+The default model (`amp_channels=24`) corresponds to the main LiftHolo model reported in the paper (~44K parameters, DIV2K PSNR 33.72 dB). We also provide a corrected single-PixelShuffle EASNet variant that halves the parameter count to ~23K and reduces latency to ~50 ms while retaining comparable fidelity (DIV2K PSNR 32.56 dB). To use it, set `single_pixelshuffle: true` in the config or pass `single_pixelshuffle=True` when constructing the model:
+
+```python
+from liftHolo import LiftHolo
+
+model = LiftHolo(scale_factor=2, amp_channels=24, single_pixelshuffle=True)
+```
 
 ## Citation
 

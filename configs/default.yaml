@@ -5,7 +5,8 @@
 model:
   name: "liftholo"
   scale_factor: 2          # Upsampling factor (2 or 4)
-  amp_channels: 32         # Amplitude SR branch channels
+  amp_channels: 24         # Amplitude SR branch channels (24 for the ~44K paper model)
+  single_pixelshuffle: false  # Set true for the ~23K corrected EASNet variant
 
 optical:
   wavelength: 532e-9       # 532 nm (green laser)
